@@ -13,6 +13,10 @@ import { mountCharacter, CHARS } from './character.js';
 import { World } from './pets.js';
 import { initLab } from './lab.js';
 import { initGame } from './game.js';
+import { initLore } from './lore.js';
+import { initPfp } from './pfp.js';
+import { initFinale } from './finale.js';
+import { initDoodles, initInk, onSecret } from './fx.js';
 import { sound } from './sound.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText, Draggable, InertiaPlugin);
@@ -227,27 +231,43 @@ $$('.ca-pill').forEach((b) => b.addEventListener('click', () => {
 }));
 
 /* ------------------------------------------------------------------ */
-/* marquee: loops forever, velocity reacts to scrolling                 */
+/* X marquee: two crossing bands, velocity reacts to scrolling          */
 /* ------------------------------------------------------------------ */
-const track = $('.marquee-track');
-track.innerHTML += track.innerHTML;
-const marqueeTL = gsap.to(track, { xPercent: -50, duration: 28, ease: 'none', repeat: -1 });
+const marquees = $$('.marquee').map((m) => {
+  const track = $('.marquee-track', m);
+  track.innerHTML += track.innerHTML;
+  const dir = m.classList.contains('marquee-b') ? -1 : 1;
+  if (dir < 0) gsap.set(track, { xPercent: -50 });
+  const tl = gsap.to(track, { xPercent: dir > 0 ? -50 : 0, duration: dir > 0 ? 28 : 34, ease: 'none', repeat: -1 });
+  return { m, track, tl, dir };
+});
 let mqDir = 1;
 ScrollTrigger.create({
-  trigger: '.marquee',
+  trigger: '.marquee-x',
   start: 'top bottom',
   end: 'bottom top',
   onUpdate(self) {
     const v = self.getVelocity();
     mqDir = self.direction;
-    gsap.to(marqueeTL, { timeScale: mqDir * (1 + Math.min(6, Math.abs(v) / 400)), duration: 0.2, overwrite: true });
-    gsap.to(track, { skewX: gsap.utils.clamp(-12, 12, -v / 220), duration: 0.3, overwrite: 'auto' });
+    marquees.forEach((q) => {
+      gsap.to(q.tl, { timeScale: mqDir * (1 + Math.min(6, Math.abs(v) / 400)), duration: 0.2, overwrite: true });
+      gsap.to(q.track, { skewX: gsap.utils.clamp(-12, 12, (-v / 220) * q.dir), duration: 0.3, overwrite: 'auto' });
+    });
   },
 });
 ScrollTrigger.addEventListener('scrollEnd', () => {
-  gsap.to(marqueeTL, { timeScale: mqDir, duration: 0.8 });
-  gsap.to(track, { skewX: 0, duration: 0.6 });
+  marquees.forEach((q) => {
+    gsap.to(q.tl, { timeScale: mqDir, duration: 0.8 });
+    gsap.to(q.track, { skewX: 0, duration: 0.6 });
+  });
 });
+gsap.fromTo('.marquee-a', { rotate: -7 }, { rotate: -2.5, ease: 'none', scrollTrigger: { trigger: '.marquee-x', start: 'top bottom', end: 'bottom top', scrub: true } });
+gsap.fromTo('.marquee-b', { rotate: 7 }, { rotate: 2.5, ease: 'none', scrollTrigger: { trigger: '.marquee-x', start: 'top bottom', end: 'bottom top', scrub: true } });
+
+/* ------------------------------------------------------------------ */
+/* the lore (pinned scroll story)                                       */
+/* ------------------------------------------------------------------ */
+initLore($('.lore'));
 
 /* ------------------------------------------------------------------ */
 /* generic reveals                                                      */
@@ -259,7 +279,7 @@ $$('.display').forEach((h) => {
     scrollTrigger: { trigger: h, start: 'top 85%' },
   });
 });
-$$('.eyebrow, .lead, .stat, .link-scribble, .rules li, .best-card').forEach((el) => {
+$$('.archive .eyebrow, .lab .eyebrow, .game .eyebrow, .lead, .stat, .link-scribble, .rules li, .best-card, .finale-hint').forEach((el) => {
   gsap.from(el, { y: 26, opacity: 0, duration: 0.7, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
 });
 
@@ -382,26 +402,54 @@ gsap.from('.arcade', {
 });
 
 /* ------------------------------------------------------------------ */
-/* finale                                                               */
+/* PFP factory                                                          */
+/* ------------------------------------------------------------------ */
+initPfp($('.pfp'));
+gsap.from('.pfp-preview', {
+  y: 120, rotate: -12, scale: 0.85, opacity: 0, duration: 1.2, ease: 'elastic.out(1, 0.6)',
+  scrollTrigger: { trigger: '.pfp', start: 'top 75%' },
+});
+gsap.from('.opt-group', { x: 40, opacity: 0, duration: 0.6, stagger: 0.07, ease: 'power3.out', scrollTrigger: { trigger: '.pfp-controls', start: 'top 75%' } });
+
+/* ------------------------------------------------------------------ */
+/* finale: jelly-physics letters                                        */
 /* ------------------------------------------------------------------ */
 const finaleSplit = new SplitText('.finale-title span', { type: 'chars', charsClass: 'fin-char' });
-gsap.from(finaleSplit.chars, {
-  yPercent: 120, rotate: () => rand(-30, 30), opacity: 0, duration: 1, ease: 'elastic.out(1, 0.5)', stagger: 0.03,
-  scrollTrigger: { trigger: '.finale-title', start: 'top 80%' },
-});
-finaleSplit.chars.forEach((c) => c.addEventListener('pointerenter', () => { charHop(c, 0.8); sound.pop(1.2 + Math.random() * 0.5, 0.2); }));
+const finale = initFinale($('.finale-title'), finaleSplit.chars);
+let finaleEntered = false;
 ScrollTrigger.create({
-  trigger: '.finale',
-  start: 'top 60%',
-  onEnter: () => {
-    const wave = () => {
-      if (!ScrollTrigger.isInViewport($('.finale-title'))) return gsap.delayedCall(3, wave);
-      finaleSplit.chars.forEach((c, i) => gsap.delayedCall(i * 0.035, () => charHop(c, 0.6)));
-      gsap.delayedCall(rand(4, 7), wave);
-    };
-    gsap.delayedCall(1.5, wave);
-  },
+  trigger: '.finale-title',
+  start: 'top bottom',
+  end: 'bottom top',
+  onToggle: (self) => (self.isActive ? finale.play() : finale.pause()),
+});
+ScrollTrigger.create({
+  trigger: '.finale-title',
+  start: 'top 75%',
   once: true,
+  onEnter: () => {
+    finaleEntered = true;
+    finale.rebuild();
+    finale.scatter(1);
+    sound.whoosh();
+    const loop = () => {
+      if (ScrollTrigger.isInViewport($('.finale-title'))) finale.wave();
+      gsap.delayedCall(rand(5, 8), loop);
+    };
+    gsap.delayedCall(4, loop);
+  },
+});
+lenis.on('scroll', (e) => finaleEntered && finale.jostle(e.velocity));
+
+/* ------------------------------------------------------------------ */
+/* ink trail, click bursts, secret word                                 */
+/* ------------------------------------------------------------------ */
+const ink = initInk({ enabled: finePointer && !reduced });
+onSecret('bounce', () => {
+  ink.makeItRain(50);
+  world.bounceAll();
+  sound.chime();
+  toast('secret unlocked: it is raining testicles.');
 });
 
 /* sparkles twinkle */
@@ -426,6 +474,7 @@ function runLoader() {
       $('.loader').remove();
       lenis.start();
       heroIntro();
+      initDoodles($('.hero'), { mobile: !finePointer });
       world.refreshPerches();
       world.intro();
     }, '-=0.45');
@@ -436,4 +485,4 @@ else window.addEventListener('load', runLoader);
 
 window.addEventListener('load', () => { ScrollTrigger.refresh(); world.refreshPerches(); });
 
-if (import.meta.env.DEV) window.__dbg = { world, lenis, lab, game };
+if (import.meta.env.DEV) window.__dbg = { world, lenis, lab, game, finale, ScrollTrigger };

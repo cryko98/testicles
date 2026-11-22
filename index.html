@@ -60,9 +60,10 @@
       <span class="logo-word">TESTICLES</span>
     </a>
     <nav class="nav-links">
-      <a href="#archive">The archive</a>
-      <a href="#lab">Bounce lab</a>
-      <a href="#game">The game</a>
+      <a href="#lore">Lore</a>
+      <a href="#lab">Lab</a>
+      <a href="#game">Game</a>
+      <a href="#pfp">PFP</a>
       <button class="sound-toggle" type="button" aria-pressed="false"><span class="sound-bars"><i></i><i></i><i></i></span><span class="sound-label">sound off</span></button>
       <a href="#contract" class="chip"><span class="chip-dot"></span>PRE-LAUNCH</a>
     </nav>
@@ -103,12 +104,39 @@
       </div>
     </section>
 
-    <!-- MARQUEE -->
-    <div class="marquee" aria-label="lore ticker">
-      <div class="marquee-track">
-        <span>IT STARTED AS A TEST.</span><i>✳</i><span>IT HIT $25.9M.</span><i>✳</i><span>THE S GOT LOOSE.</span><i>✳</i><span>ONE MASCOT. THEN TWO.</span><i>✳</i><span>PLURAL NOW. SORRY.</span><i>✳</i><span>TESTICLES ALWAYS BOUNCE.</span><i>✳</i>
+    <!-- X MARQUEE -->
+    <div class="marquee-x">
+      <div class="marquee marquee-b" aria-hidden="true">
+        <div class="marquee-track">
+          <span>$TESTICLES</span><i>✶</i><span>TWO OF THEM</span><i>✶</i><span>BOUNCE CERTIFIED</span><i>✶</i><span>NOT A TEST ANYMORE</span><i>✶</i><span>PLURAL BY DESIGN</span><i>✶</i><span>GRAB THEM. THROW THEM.</span><i>✶</i>
+        </div>
+      </div>
+      <div class="marquee marquee-a" aria-label="lore ticker">
+        <div class="marquee-track">
+          <span>IT STARTED AS A TEST.</span><i>✳</i><span>IT HIT $25.9M.</span><i>✳</i><span>THE S GOT LOOSE.</span><i>✳</i><span>ONE MASCOT. THEN TWO.</span><i>✳</i><span>PLURAL NOW. SORRY.</span><i>✳</i><span>TESTICLES ALWAYS BOUNCE.</span><i>✳</i>
+        </div>
       </div>
     </div>
+
+    <!-- LORE (pinned story) -->
+    <section class="lore" id="lore">
+      <div class="lore-pin">
+        <div class="lore-head">
+          <p class="eyebrow eyebrow-dark"><span class="roman">Ⅰ</span> THE LORE</p>
+          <p class="lore-num"><b>01</b> / 05</p>
+        </div>
+        <div class="lore-lines">
+          <h2 class="lore-line">IT STARTED AS<br />A <span class="hl">TEST.</span></h2>
+          <h2 class="lore-line">IT HIT<br /><span class="hl">$25.9M.</span></h2>
+          <h2 class="lore-line">THE <span class="hl">S</span> GOT<br />LOOSE.</h2>
+          <h2 class="lore-line">ONE MASCOT.<br />THEN <span class="hl">TWO.</span></h2>
+          <h2 class="lore-line">PLURAL NOW.<br /><span class="hl">SORRY.</span></h2>
+        </div>
+        <svg class="lore-svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMax meet" aria-label="The story of Testicles, told by the two characters"></svg>
+        <div class="lore-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <p class="lore-scroll">keep scrolling <span>↓</span></p>
+      </div>
+    </section>
 
     <!-- ARCHIVE -->
     <section class="archive paper" id="archive">
@@ -209,10 +237,50 @@
       <svg class="torn torn-bottom" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 20 L70 8 L130 22 L200 12 L270 26 L330 10 L400 24 L460 12 L530 22 L600 8 L660 24 L730 14 L800 26 L860 10 L930 22 L1000 12 L1060 26 L1130 10 L1190 22 L1260 12 L1330 24 L1390 10 L1440 18 L1440 40 Z" /></svg>
     </section>
 
+    <!-- PFP FACTORY -->
+    <section class="pfp" id="pfp">
+      <div class="pfp-grid">
+        <div class="pfp-preview">
+          <span class="pfp-tape"></span>
+          <canvas class="pfp-canvas" width="1000" height="1000" aria-label="Your profile picture preview"></canvas>
+          <p class="pfp-caption">1000 × 1000 · png · yours</p>
+        </div>
+        <div class="pfp-controls">
+          <p class="eyebrow eyebrow-ink"><span class="roman">Ⅴ</span> PFP FACTORY</p>
+          <h2 class="display" data-perch>DRESS UP<br />THE PLURAL.</h2>
+          <p class="lead">Pick a testicle, add drip, download a 1000×1000 PNG. Free. Forever. Like bouncing.</p>
+          <div class="opt-group"><span class="opt-label">who</span><div class="opts">
+            <button type="button" data-opt="who:testi">Testi</button><button type="button" data-opt="who:cles">Cles</button><button type="button" data-opt="who:both">both</button>
+          </div></div>
+          <div class="opt-group"><span class="opt-label">head</span><div class="opts">
+            <button type="button" data-opt="head:none">none</button><button type="button" data-opt="head:crown">👑 crown</button><button type="button" data-opt="head:party">🎉 party</button><button type="button" data-opt="head:cap">🧢 cap</button><button type="button" data-opt="head:tophat">🎩 top hat</button><button type="button" data-opt="head:halo">😇 halo</button>
+          </div></div>
+          <div class="opt-group"><span class="opt-label">face</span><div class="opts">
+            <button type="button" data-opt="face:none">none</button><button type="button" data-opt="face:shades">😎 shades</button><button type="button" data-opt="face:laser">🔴 laser eyes</button><button type="button" data-opt="face:mustache">🥸 stache</button><button type="button" data-opt="face:blush">☺ blush</button>
+          </div></div>
+          <div class="opt-group"><span class="opt-label">neck</span><div class="opts">
+            <button type="button" data-opt="neck:none">none</button><button type="button" data-opt="neck:chain">⛓ gold chain</button><button type="button" data-opt="neck:bowtie">🎀 bow tie</button>
+          </div></div>
+          <div class="opt-group"><span class="opt-label">bg</span><div class="opts swatches">
+            <button type="button" data-opt="bg:ink" style="--sw:#181613" aria-label="ink"></button><button type="button" data-opt="bg:yellow" style="--sw:#fac332" aria-label="yellow"></button><button type="button" data-opt="bg:cream" style="--sw:#f7ecd0" aria-label="cream"></button><button type="button" data-opt="bg:rust" style="--sw:#b8452d" aria-label="rust"></button><button type="button" data-opt="bg:sky" style="--sw:#7fc8f8" aria-label="sky"></button><button type="button" data-opt="bg:lime" style="--sw:#b8e05a" aria-label="lime"></button><button type="button" data-opt="bg:pink" style="--sw:#f5a3c7" aria-label="pink"></button>
+          </div></div>
+          <div class="opt-group"><span class="opt-label">extras</span><div class="opts">
+            <button type="button" data-opt="stars:true">✶ doodles</button><button type="button" data-opt="stars:false">clean</button><button type="button" data-opt="tag:true">$TESTICLES tag</button><button type="button" data-opt="tag:false">no tag</button>
+          </div></div>
+          <div class="pfp-actions">
+            <button class="btn btn-ink pfp-download" type="button" data-magnetic>⬇ Download PNG</button>
+            <button class="btn pfp-random" type="button">🎲 Randomize</button>
+          </div>
+        </div>
+      </div>
+      <svg class="torn torn-bottom torn-yellow" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 20 L70 8 L130 22 L200 12 L270 26 L330 10 L400 24 L460 12 L530 22 L600 8 L660 24 L730 14 L800 26 L860 10 L930 22 L1000 12 L1060 26 L1130 10 L1190 22 L1260 12 L1330 24 L1390 10 L1440 18 L1440 40 Z" /></svg>
+    </section>
+
     <!-- FINALE -->
     <section class="finale" id="contract">
       <p class="eyebrow eyebrow-dark center">THE SEQUEL HAS LANDED</p>
       <h2 class="finale-title" data-perch><span>TESTICLES</span><span>ALWAYS BOUNCE.</span></h2>
+      <p class="finale-hint">↑ grab the letters. they always bounce back.</p>
       <div class="finale-actions">
         <button class="ca-pill ca-pill-big" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11 V8 a4 4 0 0 1 8 0 V11" /></svg><span>CA coming at launch</span></button>
       </div>

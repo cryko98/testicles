@@ -17,6 +17,11 @@ import { initLore } from './lore.js';
 import { initPfp } from './pfp.js';
 import { initFinale } from './finale.js';
 import { initDoodles, initInk, onSecret } from './fx.js';
+import { initMeme } from './meme.js';
+import { initBotId } from 'botid/client/core';
+
+// invisible bot check for the paid AI endpoint (Vercel BotID)
+try { initBotId({ protect: [{ path: '/api/meme', method: 'POST' }] }); } catch { /* local dev */ }
 import { sound } from './sound.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText, Draggable, InertiaPlugin);
@@ -455,6 +460,13 @@ ScrollTrigger.create({
   },
 });
 lenis.on('scroll', (e) => finaleEntered && finale.jostle(e.velocity));
+
+/* ------------------------------------------------------------------ */
+/* meme machine                                                         */
+/* ------------------------------------------------------------------ */
+initMeme($('.meme'), { toast, pets: world.pets });
+gsap.from('.meme-stage', { y: 80, rotate: 3, opacity: 0, duration: 1.1, ease: 'elastic.out(1, 0.7)', scrollTrigger: { trigger: '.meme', start: 'top 75%' } });
+gsap.from('.meme-chip', { y: 24, opacity: 0, duration: 0.45, stagger: 0.04, ease: 'power3.out', scrollTrigger: { trigger: '.meme-styles', start: 'top 85%' } });
 
 /* ------------------------------------------------------------------ */
 /* ink trail, click bursts, secret word                                 */

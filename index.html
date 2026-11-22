@@ -64,6 +64,7 @@
       <a href="#lab">Lab</a>
       <a href="#game">Game</a>
       <a href="#pfp">PFP</a>
+      <a href="#meme">Memes</a>
       <a class="x-link" href="https://x.com/testiclesbounce" target="_blank" rel="noopener" aria-label="Testicles on X (@testiclesbounce)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
       <button class="sound-toggle" type="button" aria-pressed="false"><span class="sound-bars"><i></i><i></i><i></i></span><span class="sound-label">sound off</span></button>
       <a href="https://pump.fun/coin/3pGmCpDCr2B6cZFhFJFtLrcMCadMvjV4dB9UGJyNpump" class="chip" target="_blank" rel="noopener"><span class="chip-dot"></span>LIVE · BUY</a>
@@ -277,6 +278,51 @@
         </div>
       </div>
       <svg class="torn torn-bottom torn-yellow" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 20 L70 8 L130 22 L200 12 L270 26 L330 10 L400 24 L460 12 L530 22 L600 8 L660 24 L730 14 L800 26 L860 10 L930 22 L1000 12 L1060 26 L1130 10 L1190 22 L1260 12 L1330 24 L1390 10 L1440 18 L1440 40 Z" /></svg>
+    </section>
+
+    <!-- MEME MACHINE -->
+    <section class="meme" id="meme">
+      <div class="meme-wrap">
+        <div class="meme-head">
+          <p class="eyebrow eyebrow-dark"><span class="roman">Ⅵ</span> MEME MACHINE</p>
+          <h2 class="display" data-perch>MAKE A <span class="hl">MEME.</span></h2>
+          <p class="lead lead-dark">AI meme generator. Pick a style, choose how the boys show up, describe a scene (or roll the dice). Both of them are in every single image.</p>
+        </div>
+        <div class="meme-grid">
+          <div class="meme-controls">
+            <p class="meme-label">1 · style</p>
+            <div class="meme-styles meme-chips" role="radiogroup" aria-label="Meme style"></div>
+            <p class="meme-label">2 · the boys appear…</p>
+            <div class="meme-modes meme-chips" role="radiogroup" aria-label="How the characters appear"></div>
+            <p class="meme-label">3 · scene <em>(optional)</em></p>
+            <div class="meme-input">
+              <textarea class="meme-scene" maxlength="160" rows="2" aria-label="Describe the scene"></textarea>
+              <button type="button" class="meme-dice" aria-label="Random idea">🎲</button>
+            </div>
+            <small class="meme-count">0/160</small>
+            <input class="meme-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <button type="button" class="btn meme-go" data-magnetic>✦ Generate meme</button>
+            <p class="meme-note">powered by nano banana · free · a few per hour · bot-protected</p>
+          </div>
+          <div class="meme-output">
+            <div class="meme-stage">
+              <img class="meme-img" alt="" />
+              <div class="meme-placeholder">
+                <img src="/meme/ref-heads.png" alt="" />
+                <p>your meme shows up here</p>
+              </div>
+              <div class="meme-loading" hidden><div class="meme-spinner"><i></i><i></i></div><p>drawing the boys…</p></div>
+            </div>
+            <div class="meme-actions" hidden>
+              <button type="button" class="btn meme-download">⬇ Download</button>
+              <a class="btn btn-ink meme-share" href="#" target="_blank" rel="noopener">Post on X ↗</a>
+              <button type="button" class="ca-pill meme-again">↻ another one</button>
+            </div>
+            <p class="meme-status" role="status" aria-live="polite"></p>
+            <div class="meme-shelf" aria-label="Your recent memes"></div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- FINALE -->

@@ -12,14 +12,14 @@
 // Env (set in Vercel → Project → Settings → Environment Variables):
 //   FAL_KEY                       required  fal.ai API key
 //   UPSTASH_REDIS_REST_URL/TOKEN  optional  (or KV_REST_API_URL/TOKEN from the Vercel marketplace)
-//   MEME_PER_HOUR (3) MEME_PER_DAY (10) MEME_DAILY_CAP (150) MEME_DISABLED (unset)
+//   MEME_PER_HOUR (10) MEME_PER_DAY (30) MEME_DAILY_CAP (150) MEME_DISABLED (unset)
 //   MEME_MODEL (fal-ai/nano-banana/edit)  MEME_REF_BASE (defaults to <site>/meme/)
 import { checkBotId } from 'botid/server';
 import { STYLES, MODES, MODE_IDS, LOGO_REF, buildPrompt, isBlocked } from './_styles.js';
 
 const MODEL = process.env.MEME_MODEL || 'fal-ai/nano-banana/edit';
-const PER_HOUR = Number(process.env.MEME_PER_HOUR || 3);
-const PER_DAY = Number(process.env.MEME_PER_DAY || 10);
+const PER_HOUR = Number(process.env.MEME_PER_HOUR || 10);
+const PER_DAY = Number(process.env.MEME_PER_DAY || 30);
 const DAILY_CAP = Number(process.env.MEME_DAILY_CAP || 150);
 const SITE = 'https://www.testiclesalwaysbounce.fun';
 const ALLOWED_HOSTS = ['www.testiclesalwaysbounce.fun', 'testiclesalwaysbounce.fun', 'localhost', '127.0.0.1'];

@@ -107,13 +107,13 @@ export async function takeQuota(ip) {
 
 /* --------------------------------- fal call --------------------------------- */
 // returns { image } or { error: Response }; refunds the quota on failure
-export async function generate(input, keys, { privateIO = false } = {}) {
+export async function generate(input, keys, { privateIO = false, model = MODEL } = {}) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 55000);
   try {
     const headers = { authorization: `Key ${process.env.FAL_KEY}`, 'content-type': 'application/json' };
     if (privateIO) headers['x-fal-store-io'] = '0'; // keep the uploaded photo out of fal's request history
-    const r = await fetch(`https://fal.run/${MODEL}`, {
+    const r = await fetch(`https://fal.run/${model}`, {
       method: 'POST',
       signal: ctrl.signal,
       headers,

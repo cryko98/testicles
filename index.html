@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TESTICLES — it was supposed to be plural</title>
+  <meta name="description" content="The original Testicle hit $25.9M. This time it's Testicles. Two of them. They live here now." />
+  <meta name="theme-color" content="#181613" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <!-- shared SVG defs: hand-drawn "line boil" -->
+  <svg class="defs" width="0" height="0" aria-hidden="true">
+    <filter id="boil" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence id="boil-noise" type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="1" result="n" />
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="boil-strong" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence id="boil-noise-2" type="fractalNoise" baseFrequency="0.028" numOctaves="2" seed="4" result="n" />
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <!-- loader -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-pair"></div>
+    <p class="loader-text">counting to two<span>...</span></p>
+  </div>
+
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"><div class="cursor-dot"></div><div class="cursor-ring"><span class="cursor-label"></span></div></div>
+
+  <!-- the pets live here -->
+  <div class="pet-layer" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a href="#top" class="logo" aria-label="Testicles home">
+      <span class="logo-pair"></span>
+      <span class="logo-word">TESTICLES</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#archive">The archive</a>
+      <a href="#lab">Bounce lab</a>
+      <a href="#freezer">The freezer</a>
+      <button class="sound-toggle" type="button" aria-pressed="false"><span class="sound-bars"><i></i><i></i><i></i></span><span class="sound-label">sound off</span></button>
+      <a href="#contract" class="chip"><span class="chip-dot"></span>PRE-LAUNCH</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-copy">
+        <h1 class="hero-title" aria-label="Testicles">
+          <span class="ht-word">TESTICLE</span><span class="ht-s">S<span class="found-it">found it!<svg viewBox="0 0 60 40"><path d="M6 6 C 22 4, 40 14, 48 32 M40 26 L48 33 L52 23" /></svg></span></span>
+        </h1>
+        <p class="hero-tag" data-perch>
+          It was supposed to be plural.
+          <svg class="scribble-underline" viewBox="0 0 400 24" preserveAspectRatio="none"><path d="M3 14 C 70 6, 140 20, 210 12 S 340 6, 397 14 M40 20 C 120 15, 260 22, 360 17" /></svg>
+        </p>
+        <p class="hero-sub">The original Testicle hit <b>$25.9M</b>.<br />This time it's Testicles. There are two of them. <em>They live here now.</em></p>
+        <div class="hero-actions">
+          <button class="btn btn-bounce" type="button" data-magnetic>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18 C 6 6, 9 6, 12 18 C 14 10, 16 10, 18 18 C 19 14, 20 14, 21 18" /></svg>
+            Make it bounce
+          </button>
+          <button class="ca-pill" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11 V8 a4 4 0 0 1 8 0 V11" /></svg><span>CA coming at launch</span></button>
+        </div>
+        <p class="hero-hint"><span class="hint-arrow">↙</span> psst — grab them. throw them. they don't mind.</p>
+        <a href="#archive" class="scroll-cue">↓ <span>SCROLL FOR THE LORE</span></a>
+      </div>
+      <div class="hero-stage-wrap">
+        <div class="hero-stage" data-perch data-home>
+          <svg class="stage-doodles" viewBox="0 0 600 140" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M40 30 C 160 18, 300 40, 560 22" />
+            <path d="M80 52 C 200 44, 360 60, 520 46" />
+            <path d="M150 72 C 260 66, 360 78, 450 70" />
+          </svg>
+        </div>
+        <span class="spark s1">✶</span><span class="spark s2">✳</span><span class="spark s3">✦</span><span class="spark s4">✶</span>
+        <span class="name-tag nt-1">TESTI</span><span class="name-tag nt-2">CLES</span>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-label="lore ticker">
+      <div class="marquee-track">
+        <span>IT STARTED AS A TEST.</span><i>✳</i><span>IT HIT $25.9M.</span><i>✳</i><span>THE S GOT LOOSE.</span><i>✳</i><span>ONE MASCOT. THEN TWO.</span><i>✳</i><span>PLURAL NOW. SORRY.</span><i>✳</i><span>TESTICLES ALWAYS BOUNCE.</span><i>✳</i>
+      </div>
+    </div>
+
+    <!-- ARCHIVE -->
+    <section class="archive paper" id="archive">
+      <svg class="torn torn-top" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 18 L40 26 L90 12 L150 24 L210 10 L260 22 L330 8 L390 20 L450 12 L520 26 L580 10 L650 22 L710 14 L780 26 L850 10 L910 20 L980 12 L1040 24 L1110 8 L1170 22 L1240 12 L1300 24 L1370 10 L1440 20 L1440 40 Z" /></svg>
+      <div class="archive-grid">
+        <div class="archive-copy">
+          <p class="eyebrow"><span class="roman">Ⅱ</span> THE ARCHIVE</p>
+          <h2 class="display reveal-lines" data-perch>IT WAS SUPPOSED<br />TO BE A TEST.</h2>
+          <p class="lead">The original Testicle was a test token on Pump.fun. The damn thing hit <b>$25.9M</b>. Then came Testicles, a new coin with a second mascot and a highly unnecessary extra letter.</p>
+          <div class="stat" data-perch>
+            <span class="stat-num"><span class="count" data-to="25.9">0.0</span><small>M</small></span>
+            <span class="stat-label">Original Testicle · historical market-cap peak</span>
+          </div>
+          <a class="link-scribble" href="https://pump.fun/coin/4TyZGqRLG3VcHTGMcLBoPUmqYitMVojXinAmkL8xpump" target="_blank" rel="noopener">See the original on Pump.fun ↗</a>
+        </div>
+        <div class="archive-visual">
+          <figure class="polaroid" data-perch>
+            <span class="tape"></span>
+            <div class="photo">
+              <div class="photo-chars"></div>
+              <div class="flash"></div>
+            </div>
+            <figcaption class="caption">ORIGINAL TESTICLE<span class="caption-s-slot"></span></figcaption>
+          </figure>
+          <div class="s-sticker-zone">
+            <div class="s-sticker" tabindex="0" role="button" aria-label="Apply the missing S">S</div>
+            <p class="s-hint">← drag the missing S<br />onto the caption</p>
+          </div>
+        </div>
+      </div>
+      <svg class="torn torn-bottom" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 20 L70 8 L130 22 L200 12 L270 26 L330 10 L400 24 L460 12 L530 22 L600 8 L660 24 L730 14 L800 26 L860 10 L930 22 L1000 12 L1060 26 L1130 10 L1190 22 L1260 12 L1330 24 L1390 10 L1440 18 L1440 40 Z" /></svg>
+    </section>
+
+    <!-- BOUNCE LAB -->
+    <section class="lab" id="lab">
+      <div class="lab-head">
+        <p class="eyebrow eyebrow-dark"><span class="roman">Ⅲ</span> THE BOUNCE LAB</p>
+        <h2 class="display" data-perch>PEER-REVIEWED<br /><span class="hl">BOUNCE</span> RESEARCH.</h2>
+        <p class="lead lead-dark">Every claim needs evidence. Click anywhere in the box to drop a specimen. Grab them. Fling them. Stack them if you're brave.</p>
+      </div>
+      <div class="lab-box">
+        <canvas class="lab-canvas"></canvas>
+        <div class="lab-ui">
+          <span class="lab-count"><b>0</b> specimens</span>
+          <div class="lab-buttons">
+            <button type="button" data-lab="one">+1</button>
+            <button type="button" data-lab="ten">+10</button>
+            <button type="button" data-lab="flip">flip gravity</button>
+            <button type="button" data-lab="shake">shake</button>
+            <button type="button" data-lab="clear">clear</button>
+          </div>
+        </div>
+        <p class="lab-empty">click to drop a specimen</p>
+      </div>
+    </section>
+
+    <!-- FREEZER -->
+    <section class="freezer paper paper-ice" id="freezer">
+      <svg class="torn torn-top" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 22 L60 10 L120 24 L190 12 L250 26 L320 10 L380 22 L440 8 L510 22 L570 12 L640 26 L700 10 L770 22 L830 12 L900 26 L960 10 L1030 22 L1090 14 L1160 26 L1220 10 L1290 22 L1350 12 L1440 24 L1440 40 Z" /></svg>
+      <div class="freezer-pin">
+        <div class="freezer-copy">
+          <p class="eyebrow"><span class="roman">Ⅳ</span> THE SNOWBALL FREEZER</p>
+          <h2 class="display" data-perch>DO NOT THAW<br />FOR <span class="ice-text">100 YEARS.</span></h2>
+          <p class="lead small">Planned setup: Testicles will pair with Snowball V2 on Pump.fun. Creator fees will be paid in $SNOWBALL and routed to the Snowball treasury. The treasury will use its buyback process to buy $SNOWBALL and lock the bought tokens in Streamflow for 100 years.</p>
+          <ol class="steps">
+            <li><b>01</b><span>Testicles trades against $SNOWBALL</span></li>
+            <li><b>02</b><span>Creator fees go to the Snowball treasury</span></li>
+            <li><b>03</b><span>Treasury buys $SNOWBALL</span></li>
+            <li><b>04</b><span>Bought $SNOWBALL goes into a 100-year lock</span></li>
+          </ol>
+          <div class="freezer-actions">
+            <button class="btn btn-ink btn-freeze" type="button">❄ Test the freezer</button>
+            <a class="link-scribble" href="https://sb.fun/" target="_blank" rel="noopener">How Snowball works ↗</a>
+            <a class="link-scribble" href="https://solscan.io/account/6mgXU39j1xM5po9kH2LP2w6KTdpUGnV6eo5AfGT3jnFZ" target="_blank" rel="noopener">Treasury on Solscan ↗</a>
+          </div>
+        </div>
+        <div class="freezer-visual">
+          <div class="freezer-status"><span class="fs-dot"></span><span class="fs-text">CHAMBER OPEN</span></div>
+          <svg class="freezer-svg" viewBox="0 0 600 520" aria-label="Illustrated lock cycle">
+            <g class="fz-flow" filter="url(#boil)">
+              <path class="fz-route" d="M120 120 C 170 40, 330 30, 420 150" />
+              <g class="fz-coin coin-a"><circle cx="0" cy="0" r="22" /><text y="8">$</text></g>
+              <g class="fz-coin coin-b"><circle cx="0" cy="0" r="22" /><text y="8">$</text></g>
+              <g class="fz-coin coin-c"><circle cx="0" cy="0" r="22" /><text y="8">$</text></g>
+            </g>
+            <g class="fz-trade" filter="url(#boil)">
+              <g class="fz-mini"></g>
+              <g class="fz-snow-token"><circle cx="0" cy="0" r="30" /><path d="M-14 -8 C -6 -14, 4 -14, 10 -6 M-10 6 C -2 12, 8 10, 14 2" /></g>
+              <path class="fz-swap" d="M60 80 C 90 50, 140 50, 170 80 M160 70 L170 80 L156 86 M170 120 C 140 150, 90 150, 60 120 M70 130 L60 120 L74 114" />
+            </g>
+            <g class="fz-balls"></g>
+            <g class="fz-box" filter="url(#boil)">
+              <path class="fz-body" fill-rule="evenodd" d="M128 250 L478 246 L470 470 L136 474 Z M170 318 L436 316 L434 428 L172 430 Z" />
+              <path class="fz-trim" d="M150 292 L456 288" />
+              <path class="fz-vent" d="M180 446 L240 446 M180 457 L240 457" />
+              <text class="fz-label" x="303" y="281">SNOWBALL TREASURY</text>
+              <g class="fz-dial"><circle cx="410" cy="450" r="14" /><path class="fz-needle" d="M410 450 L418 441" /></g>
+              <g class="fz-lock"><rect x="285" y="440" width="36" height="26" rx="5" /><path class="fz-shackle" d="M293 440 V430 a10 10 0 0 1 20 0 V440" /></g>
+            </g>
+            <g class="fz-lid-g" filter="url(#boil)">
+              <path class="fz-lid" d="M118 252 L488 248 L486 222 L120 226 Z" />
+              <path class="fz-handle" d="M270 236 L340 235" />
+            </g>
+            <g class="fz-frost"></g>
+            <g class="fz-years"><text x="300" y="200">100 YEARS</text></g>
+          </svg>
+          <div class="freezer-flakes" aria-hidden="true"></div>
+        </div>
+      </div>
+      <svg class="torn torn-bottom" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 20 L70 8 L130 22 L200 12 L270 26 L330 10 L400 24 L460 12 L530 22 L600 8 L660 24 L730 14 L800 26 L860 10 L930 22 L1000 12 L1060 26 L1130 10 L1190 22 L1260 12 L1330 24 L1390 10 L1440 18 L1440 40 Z" /></svg>
+    </section>
+
+    <!-- FINALE -->
+    <section class="finale" id="contract">
+      <p class="eyebrow eyebrow-dark center">THE SEQUEL HAS LANDED</p>
+      <h2 class="finale-title" data-perch><span>TESTICLES</span><span>ALWAYS BOUNCE.</span></h2>
+      <div class="finale-actions">
+        <button class="ca-pill ca-pill-big" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11 V8 a4 4 0 0 1 8 0 V11" /></svg><span>CA coming at launch</span></button>
+      </div>
+      <footer class="foot">
+        <span>© TESTICLES — a test that got out of hand.</span>
+        <span class="foot-links"><a href="https://pump.fun/coin/4TyZGqRLG3VcHTGMcLBoPUmqYitMVojXinAmkL8xpump" target="_blank" rel="noopener">Original</a><a href="https://sb.fun/" target="_blank" rel="noopener">Snowball</a><a href="#top">Back to top ↑</a></span>
+      </footer>
+    </section>
+  </main>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

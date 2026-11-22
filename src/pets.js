@@ -22,14 +22,13 @@ const LINES = {
   thrown: ['ow.', '10/10 landing', 'again!', 'my spine (i have no spine)', 'nailed it'],
   think: [
     ['i was here first.', '$25.9M. as a test.', 'who put an S on me?', 'thinking about bouncing', 'is it launch yet?', 'left one. obviously.', 'hmm.'],
-    ["i'm the S.", 'sequel > original', 'right one. the RIGHT one.', 'that freezer looks cold', '100 years? brrr', "i'm new here", 'hmm.'],
+    ["i'm the S.", 'sequel > original', 'right one. the RIGHT one.', 'scroll down. there is a game.', 'my high score is 0', "i'm new here", 'hmm.'],
   ],
   stage: ['welcome.', "we're the plural.", 'grab us. we dare you.', 'scroll. there is lore.', 'make it bounce →', 'hi.'],
   wake: ['!!', 'i was NOT sleeping', 'huh?', '5 more minutes'],
   dizzy: ['@_@', 'the room is spinning', 'who threw that', 'blrbl'],
   angry: ['ok STOP', 'enough.', 'i am leaving'],
   shy: ['...', 'hehe', ':)'],
-  freeze: ['BRRRR', 'c-c-cold', 'thawed. barely.'],
 };
 
 const DIALOGS = [
@@ -37,7 +36,7 @@ const DIALOGS = [
   ['did you see the chart?', 'i AM the chart.'],
   ['$25.9M was a test.', 'test passed.'],
   ["who's the left one?", 'depends where you stand.'],
-  ['100 years in the freezer?', 'brr. worth it.'],
+  ['did you play the game?', 'i AM the game.'],
   ['bounce?', 'always.'],
   ["where's the S?", "it's us. we're the S."],
   ['is the CA out?', 'at launch. be patient.'],
@@ -87,8 +86,6 @@ class Pet {
     world.layer.appendChild(this.bubble);
     gsap.set(this.bubble, { xPercent: -50, yPercent: -100, transformOrigin: '50% 100%', scale: 0 });
 
-    this.ice = null;
-
     // physics / pose state
     this.x = innerWidth / 2; this.y = -300;
     this.vx = 0; this.vy = 0;
@@ -106,7 +103,7 @@ class Pet {
     this.lookOverride = null;
     this.eyeOpen = 1; this.eyeScale = 1; this.eyeRot = 0;
     this.token = null;
-    this.busy = null; // 'meet' | 'freeze' | 'script'
+    this.busy = null; // 'meet' | 'script' | 'leaving' | 'homing'
     this.dragging = false;
     this.sleeping = false;
     this.dizzyUntil = 0;
@@ -123,7 +120,7 @@ class Pet {
   get h() { return (this.size * CHAR_H) / CHAR_W; }
   get partner() { return this.world.pets[1 - this.idx]; }
   get onStage() { return this.perch === this.world.stage; }
-  get free() { return !this.dragging && !this.busy && !this.frozen; }
+  get free() { return !this.dragging && !this.busy; }
 
   // ---------- action plumbing ----------
   cancel() {
@@ -275,7 +272,6 @@ class Pet {
     this.pokes.push(now);
     this.world.onPoke?.(this);
     if (this.sleeping) { this.wake(true); return; }
-    if (this.frozen) { this.squash(0.1); sound.pop(2); return; }
     if (this.busy === 'meet') {
       this.squash(0.3); sound.squeak(this.idx ? 1.2 : 1);
       return;
@@ -342,38 +338,6 @@ class Pet {
       this.world.orbitStar(this, i, ms);
     }
     setTimeout(() => this.say(pick(LINES.dizzy), 1600), 200);
-  }
-
-  async freeze(ms = 3200) {
-    if (this.frozen) return;
-    this.cancel();
-    this.frozen = true;
-    this.busy = 'freeze';
-    if (this.sleeping) this.wake(false);
-    const ice = document.createElement('div');
-    ice.className = 'ice';
-    ice.innerHTML = '<i></i><i></i><i></i>';
-    this.world.layer.appendChild(ice);
-    this.ice = ice;
-    gsap.fromTo(ice, { scale: 1.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(2)' });
-    gsap.to(this, { eyeScale: 1.35, duration: 0.2 });
-    sound.crack();
-    const shiver = gsap.to(this, { ox: 2.5, duration: 0.05, repeat: -1, yoyo: true, ease: 'none' });
-    await new Promise((r) => setTimeout(r, ms));
-    shiver.kill();
-    this.ox = 0;
-    sound.crack();
-    const r = ice.getBoundingClientRect();
-    for (let i = 0; i < 9; i++) {
-      this.world.fx('◆', r.left + r.width / 2, r.top + r.height / 2, { color: '#bfe6ff', size: rand(10, 22), vx: rand(-260, 260), vy: rand(-420, -120), gravity: true, dur: 1 });
-    }
-    ice.remove();
-    this.ice = null;
-    this.frozen = false;
-    this.busy = null;
-    gsap.to(this, { eyeScale: 1, duration: 0.4 });
-    this.say(pick(LINES.freeze), 1800);
-    if (this.grounded) { this.launch(0, -800); sound.boing(1.3); }
   }
 
   // ---------- brain ----------
@@ -457,7 +421,7 @@ class Pet {
     });
     el.addEventListener('pointerleave', () => {
       this.world.setCursor(null);
-      if (!this.dragging && !this.frozen) gsap.to(this, { eyeScale: 1, duration: 0.3 });
+      if (!this.dragging) gsap.to(this, { eyeScale: 1, duration: 0.3 });
     });
     el.addEventListener('pointerdown', (e) => {
       if (e.button !== 0) return;
@@ -468,7 +432,7 @@ class Pet {
       const hist = [];
       const move = (ev) => {
         const dx = ev.clientX - start.x, dy = ev.clientY - start.y;
-        if (!dragging && dx * dx + dy * dy > 36 && !this.frozen) {
+        if (!dragging && dx * dx + dy * dy > 36) {
           dragging = true;
           this.cancel();
           if (this.sleeping) this.wake(false);
@@ -675,13 +639,6 @@ class Pet {
       this.bubble.style.top = by + 'px';
       this.bubble.style.setProperty('--tail', `${clamp(px - bx, -80, 80)}px`);
     }
-    if (this.ice) {
-      const w = this.size * 1.18, h = this.h * 1.2;
-      this.ice.style.width = w + 'px';
-      this.ice.style.height = h + 'px';
-      this.ice.style.left = px - w / 2 + 'px';
-      this.ice.style.top = py - h + this.h * 0.08 + 'px';
-    }
   }
 }
 
@@ -784,7 +741,7 @@ export class World {
 
     for (const p of this.pets) {
       // leave the stage when the hero scrolls away
-      if (p.onStage && stageR && stageR.top < innerHeight * 0.42 && p.grounded && !p.dragging && !p.frozen && p.busy !== 'leaving') {
+      if (p.onStage && stageR && stageR.top < innerHeight * 0.42 && p.grounded && !p.dragging && p.busy !== 'leaving') {
         const delay = p.idx * 180;
         p.act(async (t) => {
           await wait(delay, t);
@@ -810,7 +767,7 @@ export class World {
     // director: meetings
     if (now > this.nextMeet) {
       const [a, b] = this.pets;
-      const ok = [a, b].every((p) => !p.dragging && !p.frozen && p.grounded && p.busy !== 'leaving' && p.busy !== 'homing');
+      const ok = [a, b].every((p) => !p.dragging && p.grounded && p.busy !== 'leaving' && p.busy !== 'homing');
       if (ok) this.meet();
       this.nextMeet = now + rand(16000, 26000);
     }
@@ -1049,7 +1006,6 @@ export class World {
   // ---------- global actions ----------
   bounceAll() {
     this.pets.forEach((p, i) => {
-      if (p.frozen) return;
       setTimeout(() => {
         p.cancel();
         if (p.sleeping) p.wake(false);
@@ -1063,18 +1019,6 @@ export class World {
         }, 110);
       }, i * 140);
     });
-  }
-
-  freezeNearest(x, y) {
-    let best = null, bd = Infinity;
-    for (const p of this.pets) {
-      if (p.frozen || p.dragging) continue;
-      const vis = p.y > 0 && p.y - p.h < innerHeight;
-      const d = Math.hypot(p.x - x, p.y - y) + (vis ? 0 : 1e5);
-      if (d < bd) { bd = d; best = p; }
-    }
-    best?.freeze();
-    return best;
   }
 
   nudge(v) {

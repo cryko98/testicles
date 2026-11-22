@@ -7,15 +7,15 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { Draggable } from 'gsap/Draggable';
 import { InertiaPlugin } from 'gsap/InertiaPlugin';
-import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import Lenis from 'lenis';
 
 import { mountCharacter, CHARS } from './character.js';
 import { World } from './pets.js';
 import { initLab } from './lab.js';
+import { initGame } from './game.js';
 import { sound } from './sound.js';
 
-gsap.registerPlugin(ScrollTrigger, SplitText, Draggable, InertiaPlugin, MotionPathPlugin);
+gsap.registerPlugin(ScrollTrigger, SplitText, Draggable, InertiaPlugin);
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -80,7 +80,7 @@ sound.onChange((on) => {
 });
 
 /* ------------------------------------------------------------------ */
-/* static character mounts (logo, loader, polaroid, freezer)            */
+/* static character mounts (logo, loader, polaroid)                     */
 /* ------------------------------------------------------------------ */
 const logoPair = $('.logo-pair');
 mountCharacter(logoPair, 0, { boil: false });
@@ -223,7 +223,7 @@ $$('.ca-pill').forEach((b) => b.addEventListener('click', () => {
   toast('CA drops at launch. anything before that is fake.');
   gsap.fromTo(b, { rotate: -4 }, { rotate: 0, duration: 0.6, ease: 'elastic.out(1, 0.3)' });
   const p = world.pets[Math.random() < 0.5 ? 0 : 1];
-  if (!p.dragging && !p.frozen) p.say(Math.random() < 0.5 ? 'not yet.' : 'soon™', 1600);
+  if (!p.dragging) p.say(Math.random() < 0.5 ? 'not yet.' : 'soon™', 1600);
 }));
 
 /* ------------------------------------------------------------------ */
@@ -259,7 +259,7 @@ $$('.display').forEach((h) => {
     scrollTrigger: { trigger: h, start: 'top 85%' },
   });
 });
-$$('.eyebrow, .lead, .stat, .link-scribble, .steps li, .freezer-actions').forEach((el) => {
+$$('.eyebrow, .lead, .stat, .link-scribble, .rules li, .best-card').forEach((el) => {
   gsap.from(el, { y: 26, opacity: 0, duration: 0.7, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
 });
 
@@ -308,7 +308,7 @@ function applyS() {
   }
   world.burst(r.left + r.width / 2, r.top + r.height / 2, 10);
   world.pets.forEach((p, i) => setTimeout(() => {
-    if (p.dragging || p.frozen) return;
+    if (p.dragging) return;
     p.lookAtPoint(pr.left + pr.width / 2, pr.top + pr.height / 2, 2500);
     p.say(i ? 'that one is me!' : "that's us!", 2000);
   }, 400 + i * 600));
@@ -356,135 +356,29 @@ $$('[data-lab]').forEach((b) => b.addEventListener('click', () => {
 }));
 
 /* ------------------------------------------------------------------ */
-/* the freezer                                                          */
+/* KEEP 'EM UP mini-game                                                */
 /* ------------------------------------------------------------------ */
-const svgNS = 'http://www.w3.org/2000/svg';
-const fz = $('.freezer-svg');
-// mini character inside the trade scene (same traced paths)
-const mini = $('.fz-mini', fz);
-mini.innerHTML = `<path class="chr-sil" d="${CHARS[0].silhouette}"/><path class="chr-ring" fill-rule="evenodd" d="${CHARS[0].ring}"/>${CHARS[0].eyes.map((e) => `<path class="chr-eye" d="${e.d}"/>`).join('')}`;
-gsap.set(mini, { x: 40, y: 58, scale: 0.34, transformOrigin: '0 0' });
-gsap.set('.fz-snow-token', { x: 210, y: 100 });
-gsap.set('.fz-swap', { x: 30, y: 0 });
-
-// snowballs that drop into the chamber (visible through the window)
-const balls = $('.fz-balls', fz);
-balls.innerHTML = '<rect class="fz-inside" x="168" y="314" width="270" height="118" rx="6"/>';
-const ballSpots = [];
-for (let row = 0; row < 3; row++) {
-  for (let i = 0; i < 6 - row; i++) {
-    ballSpots.push({ x: 200 + i * 42 + row * 21 + rand(-4, 4), y: 404 - row * 34 });
-  }
-}
-ballSpots.forEach((s) => {
-  const g = document.createElementNS(svgNS, 'g');
-  g.setAttribute('class', 'fz-ball');
-  g.innerHTML = `<circle r="${rand(17, 21).toFixed(1)}"/><path d="M-8 -7 C -4 -11, 3 -11, 7 -6"/>`;
-  balls.appendChild(g);
-  gsap.set(g, { x: s.x, y: 120, opacity: 0 });
-  g._to = s;
+const bestNum = $('.best-num');
+const game = initGame($('.arcade'), {
+  onGameOver(score, isBest, best) {
+    bestNum.textContent = best;
+    if (isBest && score > 0) gsap.fromTo('.best-card', { scale: 1.25, rotate: -8 }, { scale: 1, rotate: -2, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
+    const p = world.pets[Math.random() < 0.5 ? 0 : 1];
+    if (p.dragging) return;
+    const line = isBest && score > 2 ? ['legend.', 'new record!!', 'we felt that.'] : score < 3 ? ['you dropped us?!', 'ouch.', 'that was quick'] : ['not bad.', 'again. AGAIN.', 'my head...'];
+    p.say(line[Math.floor(Math.random() * line.length)], 2000);
+  },
 });
-// frost crystals over the window
-const frost = $('.fz-frost', fz);
-frost.innerHTML = `<rect class="fz-frost-glass" x="170" y="318" width="266" height="110" rx="8"/>` +
-  Array.from({ length: 9 }, (_, i) => {
-    const x = 186 + i * 30 + rand(-6, 6), y = 330 + rand(0, 80), s = rand(8, 15);
-    return `<path class="fz-crystal" d="M${x - s} ${y} L${x + s} ${y} M${x} ${y - s} L${x} ${y + s} M${x - s * 0.7} ${y - s * 0.7} L${x + s * 0.7} ${y + s * 0.7} M${x - s * 0.7} ${y + s * 0.7} L${x + s * 0.7} ${y - s * 0.7}"/>`;
-  }).join('');
-const route = $('.fz-route', fz);
-route.setAttribute('d', 'M245 96 C 330 40, 420 110, 330 214');
-drawPath(route);
-
-const steps = $$('.steps li');
-const fsText = $('.fs-text');
-const fsDot = $('.fs-dot');
-function setStep(i) {
-  steps.forEach((s, j) => s.classList.toggle('active', j === i));
-  steps.forEach((s, j) => s.classList.toggle('done', j < i));
-}
-
-const coins = $$('.fz-coin', fz);
-gsap.set(coins, { opacity: 0 });
-gsap.set('.fz-years', { opacity: 0, scale: 2.4, transformOrigin: '300px 190px' });
-gsap.set('.fz-frost', { opacity: 0 });
-
-const fzTL = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
-fzTL.addLabel('s1')
-  .call(() => setStep(0))
-  .from('.fz-trade', { opacity: 0, y: 20, duration: 0.4 })
-  .to(mini, { x: 196, y: 70, duration: 0.8 }, '+=0.1')
-  .to('.fz-snow-token', { x: 72, y: 100, duration: 0.8 }, '<')
-  .to(mini, { x: 40, y: 58, duration: 0.8 }, '+=0.2')
-  .to('.fz-snow-token', { x: 210, y: 100, duration: 0.8 }, '<')
-  .addLabel('s2')
-  .call(() => setStep(1))
-  .to(route, { strokeDashoffset: 0, duration: 0.6 })
-  .to(coins, { opacity: 1, duration: 0.1, stagger: 0.25 }, '<0.2')
-  .to(coins, { motionPath: { path: route, align: route, alignOrigin: [0.5, 0.5] }, duration: 1.1, stagger: 0.25, ease: 'power1.in' }, '<')
-  .to(coins, { scale: 0, opacity: 0, duration: 0.2, stagger: 0.25 }, '-=0.6')
-  .addLabel('s3')
-  .call(() => setStep(2))
-  .to('.fz-lid-g', { rotation: -26, svgOrigin: '120 252', duration: 0.6, ease: 'back.out(2)' })
-  .to('.fz-ball', { opacity: 1, duration: 0.05, stagger: 0.07 }, '<0.2')
-  .to('.fz-ball', { y: (i, el) => el._to.y, duration: 0.7, ease: 'bounce.out', stagger: 0.07 }, '<')
-  .addLabel('s4')
-  .call(() => setStep(3))
-  .to('.fz-lid-g', { rotation: 0, svgOrigin: '120 252', duration: 0.4, ease: 'power3.in' })
-  .to('.fz-shackle', { y: 8, duration: 0.25, ease: 'back.in(3)' })
-  .to('.fz-needle', { rotation: -120, svgOrigin: '410 450', duration: 0.6, ease: 'elastic.out(1, 0.4)' }, '<')
-  .to('.fz-frost', { opacity: 1, duration: 0.6 }, '<')
-  .to('.fz-years', { opacity: 1, scale: 1, rotation: -4, duration: 0.5, ease: 'back.out(2.5)' }, '-=0.2')
-  .addLabel('end');
-
-let lastLocked = null;
-function updateStatus() {
-  const locked = fzTL.time() >= fzTL.labels.s4 + 0.3;
-  if (locked !== lastLocked) {
-    lastLocked = locked;
-    fsText.textContent = locked ? 'LOCKED · 100 YEARS' : 'CHAMBER OPEN';
-    fsDot.classList.toggle('locked', locked);
-  }
-}
-fzTL.eventCallback('onUpdate', updateStatus);
-
-const mm = gsap.matchMedia();
-mm.add('(min-width: 900px)', () => {
-  const st = ScrollTrigger.create({
-    trigger: '.freezer-pin',
-    start: 'top top+=40',
-    end: '+=2000',
-    pin: true,
-    scrub: 0.8,
-    animation: fzTL,
-  });
-  return () => st.kill();
+bestNum.textContent = game.best;
+ScrollTrigger.create({
+  trigger: '.arcade',
+  start: 'top bottom',
+  end: 'bottom top',
+  onToggle: (self) => (self.isActive ? game.play() : game.pause()),
 });
-mm.add('(max-width: 899px)', () => {
-  const st = ScrollTrigger.create({
-    trigger: '.freezer-visual',
-    start: 'top 70%',
-    onEnter: () => fzTL.play(),
-  });
-  return () => st.kill();
-});
-
-// snow inside the freezer card
-const flakes = $('.freezer-flakes');
-for (let i = 0; i < 16; i++) {
-  const f = document.createElement('span');
-  f.textContent = ['❄', '✶', '✦', '·'][i % 4];
-  f.style.left = rand(0, 100) + '%';
-  f.style.animationDelay = rand(-10, 0) + 's';
-  f.style.animationDuration = rand(6, 12) + 's';
-  f.style.fontSize = rand(10, 20) + 'px';
-  flakes.appendChild(f);
-}
-
-$('.btn-freeze').addEventListener('click', (e) => {
-  const r = e.currentTarget.getBoundingClientRect();
-  const p = world.freezeNearest(r.left + r.width / 2, r.top);
-  gsap.fromTo('.freezer-svg', { rotate: -2 }, { rotate: 0, duration: 0.6, ease: 'elastic.out(1, 0.25)' });
-  toast(p ? `${p.name} has been frozen for science.` : 'nobody to freeze. they are hiding.');
+gsap.from('.arcade', {
+  y: 80, rotate: 4, opacity: 0, duration: 1.1, ease: 'elastic.out(1, 0.7)',
+  scrollTrigger: { trigger: '.arcade', start: 'top 85%' },
 });
 
 /* ------------------------------------------------------------------ */
@@ -542,4 +436,4 @@ else window.addEventListener('load', runLoader);
 
 window.addEventListener('load', () => { ScrollTrigger.refresh(); world.refreshPerches(); });
 
-if (import.meta.env.DEV) window.__dbg = { world, lenis, lab };
+if (import.meta.env.DEV) window.__dbg = { world, lenis, lab, game };

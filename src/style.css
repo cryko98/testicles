@@ -680,3 +680,24 @@ main { position: relative; z-index: 1; }
 .btn-x svg { width: 20px; height: 20px; fill: currentColor; stroke: none; }
 .btn-x-big { font-size: 26px; padding: 16px 30px 17px; background: var(--yellow); }
 .btn-x-big svg { width: 24px; height: 24px; }
+
+/* live CA + buy */
+.ca-pill { position: relative; color: var(--cream); border-style: solid; border-color: rgba(250, 195, 50, 0.6); background: rgba(24, 22, 19, 0.6); }
+.ca-pill:hover { border-color: var(--yellow); color: var(--yellow); }
+.ca-tag { font-family: var(--display); font-size: 0.75em; padding: 2px 7px; border-radius: 6px; background: var(--yellow); color: var(--ink); }
+.ca-pill code { font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace; font-size: 0.78em; letter-spacing: 0.02em; }
+.ca-short { display: none; }
+.ca-pill svg.ca-copy { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; flex: none; }
+.ca-done { position: absolute; inset: 0; display: grid; place-items: center; border-radius: inherit; background: var(--yellow); color: var(--ink); font-family: var(--display); font-size: 0.9em; opacity: 0; transform: scale(0.8); transition: opacity 0.2s, transform 0.3s cubic-bezier(.3,1.8,.5,1); pointer-events: none; }
+.ca-pill.copied .ca-done { opacity: 1; transform: scale(1); }
+.hero .ca-pill .ca-full { display: none; }
+.hero .ca-pill .ca-short { display: inline; }
+.btn-buy { background: var(--rust); color: var(--cream); text-decoration: none; box-shadow: 4px 5px 0 #000, 0 0 0 2px var(--rust); }
+.btn-buy:hover { box-shadow: 6px 8px 0 #000, 0 0 0 2px var(--rust); }
+.btn-buy svg, .btn-chart svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.btn-chart { font-size: 22px; }
+.finale-actions .ca-pill-big { flex-basis: 100%; max-width: max-content; margin: 0 auto 6px; }
+@media (max-width: 720px) {
+  .finale-actions .ca-pill-big .ca-full { display: none; }
+  .finale-actions .ca-pill-big .ca-short { display: inline; }
+}

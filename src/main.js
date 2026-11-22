@@ -223,11 +223,26 @@ btnBounce.addEventListener('click', () => {
 });
 
 // CA pills
-$$('.ca-pill').forEach((b) => b.addEventListener('click', () => {
-  toast('CA drops at launch. anything before that is fake.');
-  gsap.fromTo(b, { rotate: -4 }, { rotate: 0, duration: 0.6, ease: 'elastic.out(1, 0.3)' });
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch { ok = false; }
+    ta.remove();
+    return ok;
+  }
+}
+$$('.ca-pill').forEach((b) => b.addEventListener('click', async () => {
+  const ok = await copyText(b.dataset.ca);
+  toast(ok ? 'CA copied. welcome to the plural.' : 'copy failed. CA: ' + b.dataset.ca);
+  b.classList.add('copied');
+  setTimeout(() => b.classList.remove('copied'), 1600);
+  gsap.fromTo(b, { rotate: -4, scale: 1.06 }, { rotate: 0, scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.3)' });
+  sound.chime();
   const p = world.pets[Math.random() < 0.5 ? 0 : 1];
-  if (!p.dragging) p.say(Math.random() < 0.5 ? 'not yet.' : 'soon™', 1600);
+  if (!p.dragging) p.say(['copied. go.', 'that is us!', 'plural, on-chain.', 'welcome aboard'][Math.floor(Math.random() * 4)], 1600);
 }));
 
 /* ------------------------------------------------------------------ */

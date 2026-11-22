@@ -22,7 +22,7 @@ const LINES = {
   drag: ['wheee', 'put me down', 'too high!!', 'i can see my house', 'this is fine', 'WHERE ARE WE GOING'],
   thrown: ['ow.', '10/10 landing', 'again!', 'my spine (i have no spine)', 'nailed it'],
   think: [
-    ['i was here first.', '$25.9M. as a test.', 'who put an S on me?', 'thinking about bouncing', 'is it launch yet?', 'left one. obviously.', 'hmm.'],
+    ['i was here first.', '$25.9M. as a test.', 'who put an S on me?', 'thinking about bouncing', 'we are live. it is real.', 'left one. obviously.', 'hmm.'],
     ["i'm the S.", 'sequel > original', 'right one. the RIGHT one.', 'scroll down. there is a game.', 'my high score is 0', "i'm new here", 'hmm.'],
   ],
   stage: ['welcome.', "we're the plural.", 'grab us. we dare you.', 'scroll. there is lore.', 'make it bounce →', 'hi.'],
@@ -40,7 +40,7 @@ const DIALOGS = [
   ['did you play the game?', 'i AM the game.'],
   ['bounce?', 'always.'],
   ["where's the S?", "it's us. we're the S."],
-  ['is the CA out?', 'at launch. be patient.'],
+  ['is the CA out?', 'it is live. copy it.'],
 ];
 
 class Token {

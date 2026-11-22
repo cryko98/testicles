@@ -90,7 +90,7 @@ export function initGame(root, { onGameOver, onScore } = {}) {
       overEl.querySelector('.go-score').textContent = score;
       overEl.querySelector('.go-best').textContent = isBest && score > 0 ? '★ new best ★' : `best: ${best}`;
       const text = `I kept TESTICLES up for ${score} bounce${score === 1 ? '' : 's'}. they always bounce.`;
-      overEl.querySelector('.go-share').href = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(location.origin)}`;
+      overEl.querySelector('.go-share').href = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://www.testiclesalwaysbounce.fun/')}`;
       overEl.hidden = false;
       onGameOver?.(score, isBest, best);
     }, 650);

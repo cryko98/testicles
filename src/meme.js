@@ -84,30 +84,31 @@ export function initMeme(root, { toast, pets } = {}) {
   }
   shelf.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) show(made[Number(b.dataset.i)]); });
 
-  async function generate() {
+  // shared request runner for both generators
+  async function run(endpoint, payload, button, toItem) {
     if (busy) return;
     if (Date.now() < cooldownUntil) { status.textContent = 'Give it a few seconds…'; return; }
-    busy = true; go.disabled = true; status.textContent = '';
+    busy = true; button.disabled = true; status.textContent = '';
     loading.hidden = false; stage.classList.add('busy');
     let li = 0;
     loadingText.textContent = LOADING[0];
     const ticker = setInterval(() => { li = (li + 1) % LOADING.length; loadingText.textContent = LOADING[li]; }, 2200);
     sound.whoosh();
     try {
-      const r = await fetch('/api/meme', {
+      const r = await fetch(endpoint, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ style, mode, scene: scene.value.trim(), website: hp.value }),
+        body: JSON.stringify({ ...payload, website: hp.value }),
       });
       const data = await r.json().catch(() => ({}));
-      if (!r.ok || !data.image) throw new Error(data.error || (r.status === 404 ? 'The meme machine only runs on the live site.' : 'Something went wrong. Try again.'));
-      const item = { image: data.image, scene: data.scene || scene.value, style, styleLabel: STYLES.find((s) => s.id === style).label };
+      if (!r.ok || !data.image) throw new Error(data.error || (r.status === 404 ? 'The meme machine only runs on the live site.' : r.status === 413 ? 'That photo is too big.' : 'Something went wrong. Try again.'));
+      const item = toItem(data);
       show(item);
       addToShelf(item);
-      if (!scene.value.trim() && data.scene) { scene.value = data.scene; count.textContent = `${scene.value.length}/160`; }
       status.textContent = data.left ? `${data.left.hour} more this hour · ${data.left.day} left today` : '';
       sound.chime();
-      pets?.forEach((p) => !p.dragging && p.say?.(['nailed it.', 'that is us!', 'frame it.', 'meme lord.'][Math.floor(Math.random() * 4)], 1800));
+      pets?.forEach((p) => !p.dragging && p.say?.(['nailed it.', 'that is us!', 'frame it.', 'new pfp?'][Math.floor(Math.random() * 4)], 1800));
+      return data;
     } catch (e) {
       status.textContent = e.message;
       sound.squeak(0.6);
@@ -117,18 +118,80 @@ export function initMeme(root, { toast, pets } = {}) {
       loading.hidden = true; stage.classList.remove('busy');
       busy = false;
       cooldownUntil = Date.now() + 6000;
-      setTimeout(() => (go.disabled = false), 1500);
+      setTimeout(() => (button.disabled = false), 1500);
     }
+  }
+
+  async function generate() {
+    const data = await run('/api/meme', { style, mode, scene: scene.value.trim() }, go,
+      (d) => ({ image: d.image, scene: d.scene || scene.value, style, styleLabel: STYLES.find((s) => s.id === style).label }));
+    if (data && !scene.value.trim() && data.scene) { scene.value = data.scene; count.textContent = `${scene.value.length}/160`; }
   }
   go.addEventListener('click', generate);
   scene.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generate(); } });
-  root.querySelector('.meme-again').addEventListener('click', generate);
+
+  // ---------- tabs ----------
+  let tab = 'meme';
+  const panels = { meme: root.querySelector('.meme-panel'), pfp: root.querySelector('.pfp-panel') };
+  root.querySelectorAll('.meme-tab').forEach((b) => b.addEventListener('click', () => {
+    tab = b.dataset.tab;
+    root.querySelectorAll('.meme-tab').forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', on); });
+    panels.meme.hidden = tab !== 'meme';
+    panels.pfp.hidden = tab !== 'pfp';
+    sound.pop(1.1, 0.4);
+  }));
+
+  // ---------- blob-head PFP ----------
+  const drop = root.querySelector('.pfp-drop');
+  const file = root.querySelector('.pfp-file');
+  const thumb = root.querySelector('.pfp-thumb');
+  const ok = root.querySelector('.pfp-ok');
+  const pfpGo = root.querySelector('.pfp-go');
+  let photo = null; // resized JPEG data URL
+
+  // shrink to max 1024px JPEG in the browser: small upload, EXIF orientation applied
+  async function prepare(f) {
+    if (!/^image\/(jpeg|png|webp)$/.test(f.type)) throw new Error('Please use a JPG, PNG or WEBP photo.');
+    if (f.size > 25 * 1024 * 1024) throw new Error('That photo is huge. Try one under 25 MB.');
+    const bmp = await createImageBitmap(f, { imageOrientation: 'from-image' }).catch(() => null);
+    const src = bmp || await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('Could not read that image.')); im.src = URL.createObjectURL(f); });
+    const w0 = src.width || src.naturalWidth, h0 = src.height || src.naturalHeight;
+    const s = Math.min(1, 1024 / Math.max(w0, h0));
+    const c = document.createElement('canvas');
+    c.width = Math.round(w0 * s); c.height = Math.round(h0 * s);
+    const cx = c.getContext('2d');
+    cx.fillStyle = '#fff'; cx.fillRect(0, 0, c.width, c.height);
+    cx.drawImage(src, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.88);
+  }
+  async function pick(f) {
+    if (!f) return;
+    try {
+      photo = await prepare(f);
+      thumb.src = photo; thumb.hidden = false;
+      drop.classList.add('has-photo');
+      status.textContent = '';
+      sound.pop(1.2, 0.5);
+    } catch (e) { status.textContent = e.message; photo = null; }
+  }
+  file.addEventListener('change', () => pick(file.files[0]));
+  ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('drag'); }));
+  drop.addEventListener('drop', (e) => pick(e.dataTransfer.files[0]));
+
+  async function makePfp() {
+    if (!photo) { status.textContent = 'Upload a photo first.'; return; }
+    if (!ok.checked) { status.textContent = 'Please confirm you have the right to use this photo.'; ok.focus(); return; }
+    await run('/api/pfp', { image: photo, consent: true }, pfpGo, (d) => ({ image: d.image, scene: 'blob-head PFP', style: 'pfp', styleLabel: 'Blob-head PFP' }));
+  }
+  pfpGo.addEventListener('click', makePfp);
+  root.querySelector('.meme-again').addEventListener('click', () => (tab === 'pfp' ? makePfp() : generate()));
 
   root.querySelector('.meme-download').addEventListener('click', () => {
     if (!current) return;
     const a = document.createElement('a');
     a.href = current.image;
-    a.download = `testicles-meme-${current.style}-${Date.now()}.jpg`;
+    a.download = `testicles-${current.style === 'pfp' ? 'pfp' : 'meme-' + current.style}-${Date.now()}.jpg`;
     document.body.appendChild(a); a.click(); a.remove();
     sound.chime();
   });

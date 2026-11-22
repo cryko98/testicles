@@ -21,7 +21,7 @@ import { initMeme } from './meme.js';
 import { initBotId } from 'botid/client/core';
 
 // invisible bot check for the paid AI endpoint (Vercel BotID)
-try { initBotId({ protect: [{ path: '/api/meme', method: 'POST' }] }); } catch { /* local dev */ }
+try { initBotId({ protect: [{ path: '/api/meme', method: 'POST' }, { path: '/api/pfp', method: 'POST' }] }); } catch { /* local dev */ }
 import { sound } from './sound.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText, Draggable, InertiaPlugin);

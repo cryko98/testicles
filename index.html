@@ -286,10 +286,26 @@
         <div class="meme-head">
           <p class="eyebrow eyebrow-dark"><span class="roman">Ⅵ</span> MEME MACHINE</p>
           <h2 class="display" data-perch>MAKE A <span class="hl">MEME.</span></h2>
-          <p class="lead lead-dark">AI meme generator. Pick a style, choose how the boys show up, describe a scene (or roll the dice). Both of them are in every single image.</p>
+          <p class="lead lead-dark">AI meme generator. Make a meme with the boys in any style, or upload a photo and turn its head into a blob for your PFP.</p>
         </div>
         <div class="meme-grid">
           <div class="meme-controls">
+            <div class="meme-tabs" role="tablist" aria-label="Generator">
+              <button type="button" class="meme-tab on" role="tab" aria-selected="true" data-tab="meme">✦ Meme</button>
+              <button type="button" class="meme-tab" role="tab" aria-selected="false" data-tab="pfp">◉ Blob-head PFP</button>
+            </div>
+            <div class="pfp-panel" hidden>
+              <p class="meme-label">1 · your photo</p>
+              <label class="pfp-drop">
+                <input type="file" class="pfp-file" accept="image/jpeg,image/png,image/webp" />
+                <img class="pfp-thumb" alt="" hidden />
+                <span class="pfp-drop-text"><b>drop a photo here</b> or <u>browse</u><small>a person, a pet or a character · the head becomes a blob</small></span>
+              </label>
+              <label class="pfp-consent"><input type="checkbox" class="pfp-ok" /> <span>This is my photo, or I have the right to use it.</span></label>
+              <button type="button" class="btn pfp-go" data-magnetic>✦ Make my PFP</button>
+              <p class="meme-note">Your photo is sent to our AI provider only to make this image. We don't store it. · 10 per hour</p>
+            </div>
+            <div class="meme-panel">
             <p class="meme-label">1 · style</p>
             <div class="meme-styles meme-chips" role="radiogroup" aria-label="Meme style"></div>
             <p class="meme-label">2 · the boys appear…</p>
@@ -300,9 +316,10 @@
               <button type="button" class="meme-dice" aria-label="Random idea">🎲</button>
             </div>
             <small class="meme-count">0/160</small>
-            <input class="meme-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
             <button type="button" class="btn meme-go" data-magnetic>✦ Generate meme</button>
             <p class="meme-note">powered by nano banana · free · 10 per hour · bot-protected</p>
+            </div>
+            <input class="meme-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
           </div>
           <div class="meme-output">
             <div class="meme-stage">

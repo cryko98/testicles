@@ -5,9 +5,12 @@
 import { gate, takeQuota, generate, json, REF_BASE } from './_guard.js';
 
 const MAX_BYTES = 2.5 * 1024 * 1024; // decoded image
-const HEAD_REF = 'ref-head.png';
+const HEAD_REF = 'ref-head.png';          // the logo (two heads)
+const HEAD_CLOSEUP = 'ref-head-single.png'; // one head, exact traced outline, close-up
 
-const PROMPT = `Edit the first image. Replace ONLY the head of the main subject (a person, an animal or a character) with ONE blob head based on the second image (the logo): a lumpy, irregular, slightly tilted potato-shaped black blob, NOT a circle, with a wobbly yellow outline (#E8B020) and two small yellow dot eyes, the right dot slightly taller. No mouth, no nose. Make it look like it was really there when the photo was taken: BIG and oversized: about 1.6 times wider than the original head, clearly bigger than a normal head and fully covering where the original head and hair were, sitting naturally on the neck, turned and tilted the same way the original head faced. It must match the photo exactly: same lighting direction, same soft shadow on the neck and collar, same focus and blur, same film grain, noise, color cast and JPEG softness, so it is not a clean sticker. Anything that was in front of the face (a hand, phone, cup, microphone, collar) stays in front of the blob. A hat or headwear stays on and sits snugly on top of the blob. Anything in the mouth (cigar, pipe, straw) keeps sticking out of the blob where the mouth was. Hair, ears, snout, beard and glasses are gone; for an animal the neck and body fur stay. Keep everything else exactly the same: body, clothes, hands, pose, background, framing and crop. Do not add text or change any existing text.`;
+const PROMPT = `Edit the first image. Replace ONLY the head of the main subject (a person, an animal or a character) with ONE blob head based on the second image (the logo): a lumpy, irregular, slightly tilted potato-shaped black blob, NOT a circle, with a wobbly yellow outline (#E8B020) and two small yellow dot eyes, the right dot slightly taller. No mouth, no nose. Make it look like it was really there when the photo was taken: BIG and oversized: about 1.6 times wider than the original head, clearly bigger than a normal head and fully covering where the original head and hair were, sitting naturally on the neck, turned and tilted the same way the original head faced. It must match the photo exactly: same lighting direction, same soft shadow on the neck and collar, same focus and blur, same film grain, noise, color cast and JPEG softness, so it is not a clean sticker. Anything that was in front of the face (a hand, phone, cup, microphone, collar) stays in front of the blob. A hat or headwear stays on and sits snugly on top of the blob. Anything in the mouth (cigar, pipe, straw) keeps sticking out of the blob where the mouth was. Hair, ears, snout, beard and glasses are gone; for an animal the neck and body fur stay. Keep everything else exactly the same: body, clothes, hands, pose, background, framing and crop. Do not add text or change any existing text.
+
+The third image is a close-up of the exact head design to copy. The new head must look exactly like it: the same silhouette and outline shape (a lumpy potato shape, wider at the upper right, with the small bump/notch on the upper-left edge and the straighter right side), the same thick, slightly wobbly YELLOW outline all the way around (yellow, never white or black), the same solid black inside, and the same two yellow eyes in the same places (a small round dot on the left and a slightly taller oval dot on the right). Only rotate, scale and light it to fit the photo; do not redesign it.`;
 
 function checkImage(dataUri) {
   const m = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(dataUri || '');
@@ -35,7 +38,7 @@ export async function POST(request) {
   const q = await takeQuota(ip);
   if (q.error) return q.error;
 
-  const out = await generate({ prompt: PROMPT, image_urls: [body.image, REF_BASE + HEAD_REF], aspect_ratio: 'auto' }, q.keys, { privateIO: true });
+  const out = await generate({ prompt: PROMPT, image_urls: [body.image, REF_BASE + HEAD_REF, REF_BASE + HEAD_CLOSEUP], aspect_ratio: 'auto' }, q.keys, { privateIO: true });
   if (out.error) return out.error;
   return json({ image: out.image, left: q.left });
 }

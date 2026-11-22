@@ -182,7 +182,7 @@ export function initMeme(root, { toast, pets } = {}) {
   async function makePfp() {
     if (!photo) { status.textContent = 'Upload a photo first.'; return; }
     if (!ok.checked) { status.textContent = 'Please confirm you have the right to use this photo.'; ok.focus(); return; }
-    await run('/api/pfp', { image: photo, consent: true }, pfpGo, (d) => ({ image: d.image, scene: 'blob-head PFP', style: 'pfp', styleLabel: 'Blob-head PFP' }));
+    await run('/api/pfp', { image: photo, consent: true }, pfpGo, (d) => ({ image: d.image, scene: 'Testicled PFP', style: 'pfp', styleLabel: 'Get Testicled PFP' }));
   }
   pfpGo.addEventListener('click', makePfp);
   root.querySelector('.meme-again').addEventListener('click', () => (tab === 'pfp' ? makePfp() : generate()));

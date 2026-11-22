@@ -486,7 +486,7 @@ main { position: relative; z-index: 1; }
 .finale-title span { display: block; white-space: nowrap; }
 .finale-title span:last-child { color: var(--yellow); }
 .fin-char { display: inline-block; }
-.finale-actions { display: flex; justify-content: center; margin-bottom: 120px; }
+.finale-actions { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 18px; margin-bottom: 120px; }
 .foot {
   max-width: var(--max); margin: 0 auto; padding-top: 24px; border-top: 1.5px dashed rgba(255, 242, 211, 0.2);
   display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 17px; color: var(--pencil);
@@ -623,7 +623,7 @@ main { position: relative; z-index: 1; }
 @media (max-width: 720px) {
   body { font-size: 18px; }
   .nav { height: 60px; }
-  .nav-links > a:not(.chip) { display: none; }
+  .nav-links > a:not(.chip):not(.x-link) { display: none; }
   .sound-label { display: none; }
   .logo-word { font-size: 18px; }
   .chip { font-size: 12px; padding: 5px 10px; }
@@ -653,3 +653,30 @@ main { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   .grain, .chip-dot, .hint-arrow, .s-sticker, .arcade-led, .game-start .go-title, .doodle-in { animation: none !important; }
 }
+
+/* ------------------------------------------------------------------ */
+/* the stickman                                                         */
+/* ------------------------------------------------------------------ */
+.stick-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.stick-svg path, .stick-svg circle { stroke-linecap: round; stroke-linejoin: round; }
+.st-hit { fill: none; stroke: transparent; pointer-events: stroke; cursor: grab; touch-action: none; }
+.st-ink { fill: none; stroke: var(--ink); }
+.st-line { fill: none; stroke: var(--char); }
+.st-head-ink { fill: var(--ink); stroke: var(--ink); pointer-events: all; cursor: grab; touch-action: none; }
+.st-head { fill: none; stroke: var(--char); }
+.st-hair { fill: none; stroke: var(--char); }
+.st-eye { fill: var(--char); }
+.st-mouth { fill: none; stroke: var(--char); }
+.st-mouth-o { fill: none; stroke: var(--char); }
+.st-blush { fill: #f56e8c; opacity: 0; }
+.bubble-stick { background: var(--yellow); }
+.bubble-stick::after { background: var(--yellow); }
+
+/* X community links */
+.x-link { display: inline-grid; place-items: center; width: 36px; height: 36px; border: 2px solid var(--yellow); border-radius: 46% 54% 50% 50% / 50% 46% 54% 50%; color: var(--yellow); transition: background 0.2s, color 0.2s, transform 0.3s cubic-bezier(.3,1.8,.5,1); }
+.x-link svg { width: 16px; height: 16px; fill: currentColor; }
+.x-link:hover { background: var(--yellow); color: var(--ink); transform: rotate(-8deg) scale(1.08); }
+.btn-x { background: var(--cream); color: var(--ink); text-decoration: none; }
+.btn-x svg { width: 20px; height: 20px; fill: currentColor; stroke: none; }
+.btn-x-big { font-size: 26px; padding: 16px 30px 17px; background: var(--yellow); }
+.btn-x-big svg { width: 24px; height: 24px; }

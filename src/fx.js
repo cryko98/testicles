@@ -35,7 +35,7 @@ export function initDoodles(hero, { mobile } = {}) {
   layer.setAttribute('aria-hidden', 'true');
   hero.prepend(layer);
   const kinds = Object.keys(DOODLES);
-  const n = mobile ? 14 : 26;
+  const n = mobile ? 4 : 8;
   const items = [];
   for (let i = 0; i < n; i++) {
     const depth = rand(0.25, 1);
@@ -46,11 +46,12 @@ export function initDoodles(hero, { mobile } = {}) {
     const isChar = Math.random() < 0.18;
     const size = (isChar ? rand(44, 80) : rand(22, 64)) * (0.55 + depth * 0.6);
     inner.innerHTML = isChar ? miniChar(i % 2) : `<svg viewBox="0 0 100 100" overflow="visible">${DOODLES[pick(kinds)]}</svg>`;
-    outer.style.left = rand(2, 96) + '%';
-    outer.style.top = rand(8, 92) + '%';
+    const edge = Math.random() < 0.5;
+    outer.style.left = (edge ? (Math.random() < 0.5 ? rand(1, 10) : rand(88, 96)) : rand(30, 70)) + '%';
+    outer.style.top = (edge ? rand(15, 85) : (Math.random() < 0.5 ? rand(4, 12) : rand(88, 95))) + '%';
     outer.style.width = size + 'px';
     outer.style.height = size + 'px';
-    outer.style.opacity = (0.25 + depth * 0.6).toFixed(2);
+    outer.style.opacity = (0.12 + depth * 0.28).toFixed(2);
     outer.style.zIndex = Math.round(depth * 10);
     outer.style.setProperty('--dur', rand(4, 9).toFixed(1) + 's');
     outer.style.setProperty('--rot', rand(-30, 30).toFixed(0) + 'deg');
@@ -74,7 +75,7 @@ export function initDoodles(hero, { mobile } = {}) {
       gsap.timeline()
         .to(inner, { scale: 1.6, rotate: '+=90', duration: 0.12, ease: 'power2.out' })
         .to(inner, { scale: 0, opacity: 0, duration: 0.2, ease: 'power2.in' })
-        .set(outer, { left: rand(2, 96) + '%', top: rand(8, 92) + '%' })
+        .set(outer, { left: (Math.random() < 0.5 ? rand(1, 10) : rand(88, 96)) + '%', top: rand(15, 85) + '%' })
         .to(inner, { scale: 1, opacity: 1, rotate: 0, duration: 0.6, ease: 'elastic.out(1, 0.4)', delay: 0.8 });
       ink?.burstAt?.(outer.getBoundingClientRect().left + outer.offsetWidth / 2, outer.getBoundingClientRect().top + outer.offsetHeight / 2);
     });

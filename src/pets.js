@@ -5,6 +5,7 @@
 import gsap from 'gsap';
 import { mountCharacter, CHAR_W, CHAR_H, NAMES, CHARS } from './character.js';
 import { sound } from './sound.js';
+import { Stick } from './stick.js';
 
 const G = 2600;
 const RENDER_W = 340; // svg is rendered big and scaled DOWN (stays crisp)
@@ -272,6 +273,12 @@ class Pet {
     this.pokes.push(now);
     this.world.onPoke?.(this);
     if (this.sleeping) { this.wake(true); return; }
+    if (this.attachedTo) {
+      this.squash(0.3); sound.squeak(this.idx ? 1.2 : 1);
+      this.swing.v += (Math.random() < 0.5 ? -1 : 1) * 5;
+      if (Math.random() < 0.5) this.say(pick(['we live here now', 'nice view', 'hi from down here', 'swing swing']), 1400);
+      return;
+    }
     if (this.busy === 'meet') {
       this.squash(0.3); sound.squeak(this.idx ? 1.2 : 1);
       return;
@@ -338,6 +345,44 @@ class Pet {
       this.world.orbitStar(this, i, ms);
     }
     setTimeout(() => this.say(pick(LINES.dizzy), 1600), 200);
+  }
+
+  // ---------- belonging to the stickman ----------
+  attach(stick) {
+    if (this.attachedTo || this.attachAnim || this.dragging || performance.now() < (this.noAttachUntil || 0)) return;
+    this.cancel();
+    if (this.sleeping) this.wake(false);
+    this.busy = 'attaching';
+    this.landOnly = null;
+    this.grounded = false;
+    this.perch = null;
+    this.sizeTarget = this.world.normalSize();
+    this.attachAnim = { stick, t: 0, dur: 0.55, x0: this.x, y0: this.y };
+    sound.whoosh();
+    if (Math.random() < 0.5) this.say(pick(['home sweet home', 'fine...', 'ok ok', 'coming!']), 1300);
+  }
+
+  detach(vx = 0, vy = -700) {
+    if (!this.attachedTo && !this.attachAnim) return;
+    this.attachedTo = null;
+    this.attachAnim = null;
+    this.busy = null;
+    this.spin = 0;
+    this.launch(vx, vy);
+    this.thrown = Math.hypot(vx, vy) > 900;
+    this.noAttachUntil = performance.now() + rand(3500, 6000);
+    this.nextThink = performance.now() + rand(1500, 3000);
+  }
+
+  comeHome(stick) {
+    if (!this.free || this.attachedTo || !this.grounded) return;
+    this.act(async (t) => {
+      if (this.perch) {
+        const x = clamp(stick.X + (this.idx ? 1 : -1) * this.size, this.size, innerWidth - this.size);
+        await this.jumpToFloor(t, x);
+      }
+      if (!this.attachedTo && stick.mode === 'normal') this.attach(stick);
+    });
   }
 
   // ---------- brain ----------
@@ -436,6 +481,11 @@ class Pet {
           dragging = true;
           this.cancel();
           if (this.sleeping) this.wake(false);
+          if (this.attachedTo || this.attachAnim) {
+            const st = this.attachedTo || this.attachAnim.stick;
+            this.attachedTo = null; this.attachAnim = null; this.spin = 0;
+            st.onStolen(this);
+          }
           this.dragging = true;
           this.landOnly = null;
           this.grounded = false;
@@ -484,7 +534,46 @@ class Pet {
     const world = this.world;
     const floor = world.floorY;
 
-    if (this.dragging && this.dragTarget) {
+    let hanging = false;
+    if (this.attachAnim && !this.dragging) {
+      const A = this.attachAnim;
+      const an = A.stick.anchors[this.idx];
+      A.t += dt;
+      const p = Math.min(1, A.t / A.dur);
+      const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      const tx = an.x, ty = an.y + this.h;
+      this.x = A.x0 + (tx - A.x0) * e;
+      this.y = A.y0 + (ty - A.y0) * e - Math.sin(p * Math.PI) * this.h * 1.4;
+      this.spin = (this.idx ? -1 : 1) * 360 * e;
+      if (p >= 1) {
+        this.attachAnim = null;
+        this.spin = 0;
+        this.attachedTo = A.stick;
+        this.busy = 'attached';
+        this.swing = { a: (this.idx ? 1 : -1) * 0.7, v: 0 };
+        this.squash(0.3);
+        sound.pop(1.2, 0.6);
+        A.stick.onAttached(this);
+      }
+      hanging = true;
+    } else if (this.attachedTo && !this.dragging) {
+      // dangling between his legs: pendulum with an accelerating pivot
+      const an = this.attachedTo.anchors[this.idx];
+      const L = Math.max(20, this.h);
+      const sw = this.swing;
+      const acc = -((G + an.ay) / L) * Math.sin(sw.a) - (an.ax / L) * Math.cos(sw.a) - 3.2 * sw.v;
+      sw.v += acc * dt;
+      sw.a = clamp(sw.a + sw.v * dt, -1.35, 1.35);
+      this.x = an.x + Math.sin(sw.a) * L;
+      this.y = an.y + Math.cos(sw.a) * L;
+      this.rot = (-sw.a * 180) / Math.PI;
+      this.facing = this.attachedTo.facing;
+      this.grounded = false;
+      hanging = true;
+    }
+    if (hanging) {
+      // handled above
+    } else if (this.dragging && this.dragTarget) {
       const px = this.x, py = this.y;
       this.x += (this.dragTarget.x - this.x) * Math.min(1, dt * 22);
       this.y += (this.dragTarget.y - this.y) * Math.min(1, dt * 22);
@@ -547,7 +636,7 @@ class Pet {
     let rotT = 0;
     if (this.dragging) rotT = clamp(this.vx * 0.02, -35, 35);
     else if (!this.grounded) rotT = clamp(this.vx * 0.012, -22, 22);
-    this.rot += (rotT - this.rot) * Math.min(1, dt * 10);
+    if (!hanging || this.attachAnim) this.rot += (rotT - this.rot) * Math.min(1, dt * 10);
 
     this.faceVis += (this.facing - this.faceVis) * Math.min(1, dt * 16);
 
@@ -653,6 +742,7 @@ export class World {
     this.perchMap = new Map();
     this.refreshPerches();
     this.pets = [new Pet(this, 0), new Pet(this, 1)];
+    this.stick = new Stick(this);
     this.nextMeet = performance.now() + rand(9000, 14000);
     this.atTopSince = performance.now();
     this.running = false;
@@ -702,6 +792,7 @@ export class World {
 
   // dramatic entrance: both fall from the sky onto the hero stage
   intro() {
+    this.introAt = performance.now();
     const r = this.stage.getBoundingClientRect();
     const hs = this.heroSize();
     this.pets.forEach((p, i) => {
@@ -734,6 +825,7 @@ export class World {
     }
     this.scrollV *= 0.9;
 
+    this.stick.update(dt, now);
     const stageR = this.rectOf(this.stage);
     const stageVisible = stageR && stageR.top > NAV_H + 60 && stageR.top < innerHeight - 40;
     if (window.scrollY < 30) { if (!this.atTop) { this.atTop = true; this.atTopSince = now; } }
@@ -773,6 +865,7 @@ export class World {
     }
 
     for (const p of this.pets) p.render(now);
+    this.stick.render(now);
   }
 
   async meet() {
@@ -1005,11 +1098,12 @@ export class World {
 
   // ---------- global actions ----------
   bounceAll() {
+    this.stick?.jump(900);
     this.pets.forEach((p, i) => {
       setTimeout(() => {
         p.cancel();
         if (p.sleeping) p.wake(false);
-        if (p.dragging) return;
+        if (p.dragging || p.attachedTo || p.attachAnim) return;
         p.sqV += 8;
         setTimeout(() => {
           p.launch(rand(-80, 80), -rand(1250, 1500));
